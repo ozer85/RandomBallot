@@ -1,0 +1,251 @@
+<div class="container">
+    
+    <div id="title-header" class="row">
+    
+        <div id="title-sub">
+            <h1>Random Ballot</h1>
+            <h3>Making Electoral Reform Fun!</h3>
+        </div>
+        <div id="blurb">
+            <p>The Random Ballot is a voting system, and for you and me, it works much the same as voting currently does. You turn up at a polling station and mark your ‘X’ in the box next to the candidate that you’d like to represent your constituency in Parliament. But once all the ballots have been cast, instead of laboriously counting them to see who has the most votes, they are simply collected together and a single ballot paper is selected at random. Whichever candidate’s name is on the paper is that constituency’s new MP.</p>
+            <p>Sounds crazy, right? Read on to find out why this system is not as madcap as it seems, or use the tool below to see how the 2017 election might have looked if it had been run using the Random Ballot system.</p>
+        </div>
+        <div id="anchor-buttons" class="container-fluid text-center">
+        
+            <button type="button" class="btn btn-dark">Run Your Election!</button>
+            <button type="button" class="btn btn-dark">Find Out More!</button>
+        
+        </div>
+    
+    </div>
+    
+    <hr />
+    
+    <div id="tool-main" class="row">
+    
+        <div id="map-container" class="col-xs-12 col-sm-6">
+        </div>
+
+        <div id="controls-container" class="col-xs-12 col-sm-6">
+            <form>
+                <p><strong>Minimum vote share required to be in contention:</strong></p>
+                <fieldset class="form-group">
+                    <div class="col-sm-3 force-float">
+                      <label class="form-check-label">
+                        <input type="radio" class="form-check-input" name="threshold" id="threshold0" value="0" onclick="changeThreshold(0)" checked> None</label>
+                    </div>
+                    <div class="col-sm-3 force-float">
+                      <label class="form-check-label">
+                        <input type="radio" class="form-check-input" name="threshold" id="threshold5" onclick="changeThreshold(0.05)" value="5"> 5%</label>
+                    </div>
+                    <div class="col-sm-3 force-float">
+                      <label class="form-check-label">
+                        <input type="radio" class="form-check-input" name="threshold" id="threshold10" onclick="changeThreshold(0.1)" value="10"> 10%</label>
+                    </div>
+                </fieldset>
+            </form>
+            <button type="button" id="build-button" class="btn btn-dark" onclick="buildParliament(selectedRadio)">Elect your Parliament!</button>
+            <hr />
+            
+            <div id="result-breakdown">
+            
+            <div id="overview-container" class="container-fluid">
+                <h2><span id="headline"></span></h2>
+                <p id="standfirst"></p>
+            </div>
+            <div id="aggregates-container"></div>
+            <div id="aggregates-legend" class="row">
+                
+                    
+                    <div class="col-xs-1 row first-bump legend-item">
+                        <div class="col-xs-3">
+                            <svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="2" y="3" width="25" height="25" rx="5" ry="5" fill="#d50000"/>
+                            </svg>
+                        </div>
+                        <div class="col-xs-9 legend-text">Lab</div>
+                    </div>
+                    
+                    <div class="col-xs-1 row left-bump legend-item">
+                        <div class="col-xs-3">
+                            <svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="2" y="3" width="25" height="25" rx="5" ry="5" fill="#0087dc"/>
+                            </svg>
+                        </div>
+                        <div class="col-xs-9 legend-text">Con</div>
+                    </div>
+                    
+                    <div class="col-xs-1 row left-bump legend-item">
+                        <div class="col-xs-3">
+                            <svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="2" y="3" width="25" height="25" rx="5" ry="5" fill="#FDBB30"/>
+                            </svg>
+                        </div>
+                        <div class="col-xs-9 legend-text">LD</div>
+                    </div>
+                    
+                    <div class="col-xs-1 row left-bump legend-item">
+                        <div class="col-xs-3">
+                            <svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="2" y="3" width="25" height="25" rx="5" ry="5" fill="#B3009D"/>
+                            </svg>
+                        </div>
+                        <div class="col-xs-9 legend-text">UKIP</div>
+                    </div>
+                    
+                    <div class="col-xs-1 row left-bump legend-item">
+                        <div class="col-xs-3">
+                            <svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="2" y="3" width="25" height="25" rx="5" ry="5" fill="#FFF95D"/>
+                            </svg>
+                        </div>
+                        <div class="col-xs-9 legend-text">SNP</div>
+                    </div>
+                    
+                    <div class="col-xs-1 row left-bump legend-item">
+                        <div class="col-xs-3">
+                            <svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="2" y="3" width="25" height="25" rx="5" ry="5" fill="#8dc63f"/>
+                            </svg>
+                        </div>
+                        <div class="col-xs-9 legend-text">Green</div>
+                    </div>
+                    
+                    <div class="col-xs-1 row left-bump legend-item">
+                        <div class="col-xs-3">
+                            <svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="2" y="3" width="25" height="25" rx="5" ry="5" fill="#3F8428"/>
+                            </svg>
+                        </div>
+                        <div class="col-xs-9 legend-text">PC</div>
+                    </div>
+                    
+                    <div class="col-xs-1 row left-bump legend-item">
+                        <div class="col-xs-3">
+                            <svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="2" y="3" width="25" height="25" rx="5" ry="5" fill="gray"/>
+                            </svg>
+                        </div>
+                        <div class="col-xs-9 legend-text">Other</div>
+                    </div>
+                
+                
+            </div>
+                
+            </div>
+                
+        </div>
+        
+    </div>
+    
+    <hr />
+    
+    <div id="faqs" class="row">
+    
+    <h3>FAQs</h3>    
+    
+    <div id="accordion">
+      <div class="card">
+        <div class="card-header" id="headingOne">
+          <h5 class="mb-0">
+            <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+              Is this a joke?
+            </button>
+          </h5>
+        </div>
+
+        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+          <div class="card-body">
+              <p>Yes and no (Minister). I’m aware that the Random Ballot is an esoteric system, and that there’s no prospect at all of it being adopted in the UK – for now. But I do genuinely think that it is an elegant system that solves a lot of the problems associated with both first-past- the-post and the various alternatives commonly put forward as prospective replacements.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" id="headingTwo">
+          <h5 class="mb-0">
+            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+              So what has the Random Ballot got going for it?
+            </button>
+          </h5>
+        </div>
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+          <div class="card-body">
+              <p>Shall I list the ways?</p>
+              <ul>
+                  <li><b>It’s proportional</b> – averaged over 650 constituencies, the proportion of seats held by each UK party under Random Ballot will tend towards the share of the vote they received. By contrast, our current voting system – <a href="https://inews.co.uk/news/politics/number-seats-party-won-vs-vote-share/">called by one academic</a> “one of the most disproportionate electoral systems available” – tends to produce Parliaments that don’t accurately reflect the way people voted. <a href="https://commonslibrary.parliament.uk/parliament-and-elections/elections-elections/general-election-2017-turning-votes-into-seats/">In 2017</a>, the Conservative Party required on average 43,000 votes to elect each of its MPs, whereas the Green Party needed 525,700 and the Lib Dems 197,700.</li>
+                  <li><b>It’s simple</b> – unlike most of the <a href="http://www.dprvoting.org/System_Comparison.htm">alternatives</a> put forward to replace first-past- the-post, Random Ballot doesn’t require voters to rank candidates, make more than one choice, or express a second preference. To the voter, the system works exactly as it does now.</li>
+                  <li><b>There are no wasted votes</b> – in each constituency, a candidate’s chances of getting elected are directly proportional to the number of people they can convince to vote for them. This means that every vote matters, and candidates should work harder to listen to their prospective constituents.</li>
+                  <li><b>It maintains the constituency link</b> – unlike some alternatives to first-past- the-post, Random Ballot keeps the link between an MP and their constituency, so that voters in each area of the country have someone to represent them specifically in Parliament.</li>
+                  <li><b>There are no safe seats</b> – under first-past- the-post, any MP who gains 50% of the vote is considered by the <a href="http://researchbriefings.parliament.uk/ResearchBriefing/Summary/CBP-8067">House of Commons Library</a> to hold a “very safe seat”. These seats almost never change hands, meaning that the other half of residents never get their voice heard in Parliament. Under Random Ballot, a candidate winning 50% of the vote would, on average, win the seat 50% of the time, giving a chance for other people’s views to be represented. It also means that election results won’t be determined by a handful of swing seats, ensuring that the importance of everyone’s vote is equal regardless of where in the country you live.</li>
+              </ul>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" id="headingThree">
+          <h5 class="mb-0">
+            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+             But won’t this mean that a load of nutters would get elected?
+            </button>
+          </h5>
+        </div>
+        <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+          <div class="card-body">
+              <p>It’s true that at every election, some people vote for candidates most would consider to be ‘extreme’ – be that the BNP or Socialist Labour. But actually the number is vanishingly small: the BNP mustered 4,580 votes across the whole of the UK in 2017 – around 0.01% of the total – which makes it unlikely that they’d be elected whichever voting system is used.</p>
+              <p>However under a ‘pure’ Random Ballot, chance could dictate that a candidate from a fringe party could be elected against the vehement wishes of most voters – each person’s ballot paper has as much chance of being selected as any other, after all. To guard against this, we can require that a candidate reaches a minimum vote share before they are in contention to be elected, so that each MP commands the support of at least a broad segment of their electorate. For example, in the UK candidates must put up a deposit of £500 to stand in a general election, which is only returned to them if they receive 5% of the votes in their constituency. You could argue that it shouldn’t be possible for a candidate to both be elected and lose their deposit. You can see the impact of setting a 5% or 10% minimum vote share threshold on the result in the simulation above.</p>
+              <p>However you can equally argue that routinely ignoring people whose views fall outside of the mainstream results in disillusionment with politics. Often fringe parties receive votes as a protest against ‘the establishment’, and perhaps with a voting system that ensured that their vote mattered, these voters would consider their choices more carefully. Whether or not these are concerns that you believe to be more important than preventing fringe parties from returning MPs, Random Ballot can be tweaked to accommodate either view.</p>
+
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" id="headingFour">
+          <h5 class="mb-0">
+            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+             Why should my hard-working, knowledgeable MP get the boot against the wishes of the majority of her constituents?
+            </button>
+          </h5>
+        </div>
+        <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
+          <div class="card-body">
+              <p>Because first-past-the-post produces safe seats that never change hands, it also produces MPs who represent their constituencies for extremely long periods – <a href="https://en.wikipedia.org/wiki/Records_of_members_of_parliament_of_the_United_Kingdom#Longest">the longest period of service</a> since the beginning of the 20th Century is almost 64 years. Is this a good thing? Certainly some knowledge of how Parliament works is helpful to get things done as an MP. But too little turnover and Parliament becomes staid and riddled with institutional inertia. There’s also <a href="https://press.princeton.edu/titles/11152.html">evidence to suggest</a> that political expertise doesn’t translate into better decision-making, as the experts get swayed too readily by “the way things have always been done”. In a democracy where it is frequently alleged that MPs are ‘out of touch’, the perverse level of job security and insulation from the consequences of an MP’s decisions may actually be more important than the loss of experience that may result from them losing their seat.</p>
+
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" id="headingFive">
+          <h5 class="mb-0">
+            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+             So are there any down sides?
+            </button>
+          </h5>
+        </div>
+        <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordion">
+          <div class="card-body">
+              <p>Well, if like me you love the drama of election nights and reading the runes as the results start to filter through, then there’s possibly some bad news: because Random Ballot lends itself to electronic counting and selection of the winning ballot papers, election night would be a much quicker affair. You could end up in bed by midnight – so much for the election night party!</p>
+
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" id="headingSix">
+          <h5 class="mb-0">
+            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+             I think I can build a better system - can I make my own variation?
+            </button>
+          </h5>
+        </div>
+        <div id="collapseSix" class="collapse" aria-labelledby="headingSix" data-parent="#accordion">
+          <div class="card-body">
+              <p>Of course - nothing would give me greater pleasure! Fork me over on GitHub, and drop me a line to let me know what weird and wonderful results you come up with.</p>
+
+          </div>
+        </div>
+      </div>
+        
+    </div>
+        
+    </div>
+    
+</div>

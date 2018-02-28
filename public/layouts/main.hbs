@@ -1,0 +1,830 @@
+<html>  
+  <head>
+    <title>Random Ballot - electoral reform is fun!</title>
+      <script src="scripts/jquery-3.2.1.min.js"></script>
+      <script src="scripts/d3.v4.min.js"></script>
+      <script src="scripts/popper.min.js"></script>
+      <script src="scripts/bootstrap.min.js"></script>
+      <link rel="stylesheet" href="layouts/bootstrap.min.css"></link>
+    
+    <style>
+        .background {
+          fill: none;
+          pointer-events: all;
+        }
+        
+        #aggregates-container{
+            padding-left: 10%;
+        }
+        
+        #aggregates-label{
+            width: 78.5%;
+            height: 80px;
+            border: 2px solid gray;
+            border-radius: 10px;
+            background-color: #3a3a3a;
+            color: white;
+            text-align: center;
+            vertical-align: middle;
+            padding-top:4.5%;
+            margin-left: 10%;
+            
+        }
+        
+        #aggregates-legend{
+            border: 1px solid gray; 
+            border-radius: 2px;
+            height: 35px;
+            margin: 10px 10%;
+            width: 78.5%;
+            visibility: hidden;
+        }
+        
+        #aggregates-legend{
+            font-size: 12px;
+            vertical-align: middle;
+        }
+        
+        .first-bump{
+            margin-left: 1px;
+        }
+        
+        .left-bump{
+            margin-left: 15px;
+        }
+        
+        .legend-text{
+            margin-top: 5px;
+        }
+        
+        #overview-container{
+            text-align: center;
+        }
+        
+        #map-container{
+            overflow: visible;
+        }
+        
+        #controls-container{
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        #build-button{
+            margin-bottom: 50px;
+            margin-top: 20px;
+        }
+        
+        .force-float{
+            float: left;
+        }
+        
+        .form-group{
+            margin-left: 20%;
+        }
+        
+        div.tooltip {
+          color: #fff; 
+          background: #5e5e5e;
+          font-size: 0.8em;
+          border-radius: 5px; 
+          box-shadow: 0px 0px 2px 0px #a6a6a6; 
+          padding: .2em; 
+          text-shadow: #f5f5f5 0 1px 0;
+          border: 2px solid #2e2e2e;
+          opacity: 0.9; 
+          position: absolute;
+          width: 70%;
+          z-index:999;
+        }
+        
+        .hidden {
+          display: none;
+        }
+        
+        #gender-women {
+            fill: #f442bc;
+        }
+        
+        #gender-men {
+            background-color: #0d18aa;
+            height: 40px;
+        }
+        
+        .gender-women {
+            background-color: #f442bc;
+            height: 50px;
+            float: left;
+            font-size: 0.7em;
+            color: white;
+            padding-top: 1.9%;
+        }
+        
+        .gender-men {
+            background-color: #0d18aa;
+            height: 50px;
+            float: left;
+            font-size: 0.7em;
+            color: white;
+            padding-top: 1.9%;
+        }
+        
+        #gender-balance {
+            padding-top: 5%;
+        }
+        
+        #gender-labels {
+            display: inline-block;
+            width: 80%;
+        }
+        
+        .gender-label {
+            /*position: absolute;*/
+            float: left;
+            background-color: #000;
+            height: 40px;
+        }
+        
+        #gender-title {
+            display: inline-block;
+            text-align: left;
+            margin-left: -8px;
+        }
+        
+        #graveyard {
+            width: 100%;
+            margin-bottom: 20px;
+            margin-left: 28px;
+            text-align: center;
+            font-size: 0.67em;
+        }
+        
+        .graveyard-mp {
+            padding: 2px;
+            width: 53px;
+        }
+        
+        .elected-text {
+            color: green;
+            font-weight: bold;
+            padding: 2px, 2px, 2px, 2px;
+        }
+        
+        .defeated-text {
+            color: red;
+            font-weight: bold;
+            padding: 2px, 2px, 2px, 2px;
+        }
+        
+        .btn {
+            margin: 0px 10px;
+        }
+        
+        #title-sub {
+            text-align: center;
+            width: 100%;
+            margin: 2% 0%;
+        }
+        
+        #title-sub h1 {
+            font-size: 5em;
+        }
+        
+        #title-sub h3 {
+            font-size: 2em;
+        }
+        
+        #accordion {
+            margin-bottom: 20px;
+        }
+        
+    </style>
+  </head>
+  <body>
+    {{{body}}}
+      <script>
+          
+        var selectedRadio = 0;  
+        var virginCheck = true;
+        var svg, arc, arcs, pie, labelArc, g;
+        var s = 1;
+        var aggregateResults, genderBalance;
+          
+        function changeThreshold (val){
+            console.log(val);
+            selectedRadio = val;
+        }
+          
+        function returnPartyColour(key){
+            //console.log(key);
+            var colours = {
+                "Lab": "#d50000",
+                "Con": "#0087dc",
+                "LD": "#FDBB30",
+                "Green": "#8dc63f",
+                "SNP": "#FFF95D",
+                "PC": "#3F8428",
+                "UKIP": "#B3009D",
+                "Other": "gray"
+              };
+            return colours[key];
+        }
+          
+        $(".legend-item")
+            .mouseover(function(){
+                var partyText = $(this).find(".legend-text").html();
+                var partyNameLookup = {
+                    "Lab": "Labour",
+                    "Con": "The Conservatives",
+                    "LD": "The Liberal Democrats",
+                    "Green": "The Greens",
+                    "SNP": "The SNP",
+                    "PC": "Plaid Cymru",
+                    "UKIP": "UKIP",
+                    "Other": "Other parties"
+                }
+
+                $("#result-breakdown").append(
+                '<div id="aggregates-label"><p>'+partyNameLookup[partyText]+' won '+aggregateResults[partyText]+' seats</p></div>');
+            
+                //console.log(aggregateResults);
+            });
+          
+          $(".legend-item")
+            .mouseout(function(){
+              $("#aggregates-label").remove();
+          });
+          
+        function pieVtwo(data){
+            
+            var chartResults = [];
+            for (var key in data) {
+              if (data.hasOwnProperty(key)) {
+                var val = data[key];
+                chartResults.push({
+                    "label": key,
+                    "value": val
+                });
+              }
+            }
+            
+            if(!virginCheck){
+                change();
+                return;                
+            }
+            
+            r = 210;
+            ir = 105;
+            pi = Math.PI;
+            
+            function change() {
+                $('.pie-label').remove();
+                $('#gender-balance').remove();
+                $('#graveyard').remove();
+                svg = d3.select("#aggregates-container")
+                    .data([chartResults]);
+                pie = d3.pie()
+                    .value(function(d) { return d.value; })
+                    .startAngle(-90 * (pi/180))
+                    .endAngle(90 * (pi/180));
+                g.data(pie);
+                path = d3.select("#aggregates-container").selectAll("path").data(pie); // Compute the new angles
+                path.transition().duration(500).attrTween("d", arcTween);  
+                
+                var textRefresh = svg.selectAll('.arc').data(pie);
+                textRefresh.exit()
+                    .text("test");
+                    
+                
+                setTimeout(function(){
+                    svg.selectAll('.arc')
+                    .append("text")
+                    .attr("class", "pie-label")
+                    .attr("transform", function(d) { 
+                                var centres = arc.centroid(d);
+                                //console.log(centres);
+                                centres[1] += 6;
+                                centres[0] -= 10;
+                                return "translate(" + centres + ")";        
+                        })
+                    .attr("class", "pie-label")
+                    .text(function(d) { return data[d.data.label] > 20 ? data[d.data.label] : null; })	
+                    .style("fill", "#fff")
+                    .on("mouseover", function(d){
+
+                        var partyNameLookup = {
+                            "Lab": "Labour",
+                            "Con": "The Conservatives",
+                            "LD": "The Liberal Democrats",
+                            "Green": "The Greens",
+                            "SNP": "The SNP",
+                            "PC": "Plaid Cymru",
+                            "UKIP": "UKIP",
+                            "Other": "Other parties"
+                        }
+
+                        $("#result-breakdown").append(
+                        '<div id="aggregates-label"><p>'+partyNameLookup[d.data.label]+' won '+d.data.value+' seats</p></div>');
+                    })
+                    .on("mouseout", function(){ $("#aggregates-label").remove();}); 
+                    
+                }, 200);
+                
+            }
+            
+            function arcTween(a) {
+              var i = d3.interpolate(this._current, a);
+              this._current = i(0);
+              return function(t) {
+                return arc(i(t));
+              };
+            } 
+            
+            pie = d3.pie()
+	           .value(function(d) { return d.value; })
+                .startAngle(-90 * (pi/180))
+                .endAngle(90 * (pi/180));
+            
+            arc = d3.arc()
+                .outerRadius(r)
+                .innerRadius(ir);
+
+            labelArc = d3.arc()
+                .outerRadius(r * 0.8)
+                .innerRadius(r * 0.65);
+            
+            svg = d3.select("#aggregates-container")
+                .append("svg")
+                .attr("width", "100%")
+                .attr("height", 220)
+                .data([chartResults])
+                    .append("g")
+                    .attr("transform", "translate(" + r + "," + r + ")"); // Moving the center point. 1/2 the width and 1/2 the height
+            
+            g = svg.selectAll("arc")
+                .data(pie)
+                .enter().append("g")
+                .attr("class", "arc");
+            
+            g.append("path")
+                .attr("d", arc)
+                .style("fill", function(d) { return returnPartyColour(d.data.label);})
+                .each(function(d) { this._current = d; })
+                .on("mouseover", function(d){
+
+                        var partyNameLookup = {
+                            "Lab": "Labour",
+                            "Con": "The Conservatives",
+                            "LD": "The Liberal Democrats",
+                            "Green": "The Greens",
+                            "SNP": "The SNP",
+                            "PC": "Plaid Cymru",
+                            "UKIP": "UKIP",
+                            "Other": "Other parties"
+                        }
+
+                        $("#result-breakdown").append(
+                        '<div id="aggregates-label"><p>'+partyNameLookup[d.data.label]+' won '+d.data.value+' seats</p></div>');
+                    })
+                    .on("mouseout", function(){ $("#aggregates-label").remove();}); 
+            
+            g.append("text")
+                .attr("class", "pie-label")
+                .attr("transform", function(d) {                    
+                            var centres = arc.centroid(d);
+                            //console.log(centres);
+                            centres[1] += 6;
+                            centres[0] -= 10;
+                            return "translate(" + centres + ")";        
+                    })
+                .attr("class", "pie-label")
+                .text(function(d) { return d.data.value > 20 ? d.data.value : null; })	
+                .style("fill", "#fff")
+                .on("mouseover", function(d){
+
+                        var partyNameLookup = {
+                            "Lab": "Labour",
+                            "Con": "The Conservatives",
+                            "LD": "The Liberal Democrats",
+                            "Green": "The Greens",
+                            "SNP": "The SNP",
+                            "PC": "Plaid Cymru",
+                            "UKIP": "UKIP",
+                            "Other": "Other parties"
+                        }
+
+                        $("#result-breakdown").append(
+                        '<div id="aggregates-label"><p>'+partyNameLookup[d.data.label]+' won '+d.data.value+' seats</p></div>');
+                    })
+                    .on("mouseout", function(){ $("#aggregates-label").remove();}); 
+
+            
+            virginCheck = false;
+            
+        }
+          
+        function buildGender(data) {
+            
+            var divWidth = $("#controls-container").width();
+            //console.log(divWidth);
+            var margins = {top: 10, right: 40, bottom: 10, left: 50};
+            var genderWidth = 110;
+            
+            var genderDiv = d3.select("#controls-container")
+                .append("div")
+                .attr("id", "gender-balance")
+                .attr("width", "100%");
+            
+            var genderTitle = genderDiv.append("div")
+                .attr("id","gender-title")
+                .attr("width", "80%");
+            
+            $('#gender-title').html("<h5>What's the gender balance of your Parliament?</h5>");
+                
+            var xScale = d3.scaleLinear().range([0, divWidth*0.8]);
+            xScale.domain([0, 650]);            
+            
+            var labelContainer = genderDiv.append("div")
+                .attr("id","gender-labels")
+                .attr("width", "80%")
+                .attr("height", 60);
+            
+            var menLabel = labelContainer.append("div")
+                .attr("id","men-div")
+                .attr("class","gender-men")
+                .style("width", xScale(data.Men) + "px");
+            
+            var womenLabel = labelContainer.append("div")
+                .attr("id","women-div")
+                .attr("class","gender-women")
+                .style("width", xScale(650-data.Men) + "px");
+            
+            var menLine2, womenLine2;
+            
+            if (data.Men > 442){
+                menLine2 = "<b>" + (data.Men-442) + " more</b> than in 2017"
+            } else if (data.Men < 442){
+                menLine2 = "<b>" + (442-data.Men) + " fewer</b> than in 2017"
+            } else {
+                menLine2 = "<b>Exactly the same</b> as in 2017"
+            }
+            
+            if (data.Women > 208){
+                womenLine2 = "<b>" + (data.Women-208) + " more</b> than in 2017"
+            } else if (data.Women < 208){
+                womenLine2 = "<b>" + (208-data.Women) + " fewer</b> than in 2017"
+            } else {
+                womenLine2 = "<b>Exactly the same</b> as in 2017"
+            }
+            
+            $('#men-div').html("You elected " + data.Men + " men<br/>" + menLine2);
+            $('#women-div').html("You elected " + data.Women + " women<br/>" + womenLine2);
+            
+            //buildGraveyard();
+            
+        }
+          
+        function buildGraveyard (data){
+            
+            var parentRow = d3.select('#tool-main')
+                .append("div")
+                .attr("id", "graveyard")
+                .attr("class", "row");
+            
+            var graveyardTitle = parentRow.append("div").attr("width", "100%").attr("class", "row").html("<h4>Who made the cut?</h4>");
+            var photoGallery = parentRow.append("div").attr("width", "100%").attr("class", "row");
+            
+            var actual = {
+                "E14000803": {"party": "Con",
+                              "elected": "tmay.jpg",
+                              "rip": "tmay_bw.jpg",
+                              "name": "Theresa May"},
+                "E14000907": {"party": "Con",
+                              "elected": "phammond.jpg",
+                              "rip": "phammond_bw.jpg",
+                              "name": "Philip Hammond"},
+                "E14001007": {"party": "Con",
+                              "elected": "bjohnson.jpg",
+                              "rip": "bjohnson_bw.jpg",
+                              "name": "Boris Johnson"},
+                "E14000735": {"party": "Con",
+                              "elected": "arudd.jpg",
+                              "rip": "arudd_bw.jpg",
+                              "name": "Amber Rudd"},
+                "E14000724": {"party": "Con",
+                              "elected": "ddavis.jpg",
+                              "rip": "ddavis_bw.jpg",
+                              "name": "David Davis"},
+                "E14000953": {"party": "Con",
+                              "elected": "jhunt.jpg",
+                              "rip": "jhunt_bw.jpg",
+                              "name": "Jeremy Hunt"},
+                "E14000983": {"party": "Con",
+                              "elected": "mgove.jpg",
+                              "rip": "mgove_bw.jpg",
+                              "name": "Michael Gove"},
+                "E14000850": {"party": "Con",
+                              "elected": "lfox.jpg",
+                              "rip": "lfox_bw.jpg",
+                              "name": "Liam Fox"},
+                "E14000607": {"party": "Con",
+                              "elected": "asoubry.jpg",
+                              "rip": "asoubry_bw.jpg",
+                              "name": "Anna Soubry"},
+                "E14000763": {"party": "Lab",
+                              "elected": "jcorbyn.jpg",
+                              "rip": "jcorbyn_bw.jpg",
+                              "name": "Jeremy Corbyn"},
+                "E14000737": {"party": "Lab",
+                              "elected": "jmcdonnell.jpg",
+                              "rip": "jmcdonnell_bw.jpg",
+                              "name": "John McDonnell"},
+                "E14000720": {"party": "Lab",
+                              "elected": "dabbott.jpg",
+                              "rip": "dabbott_bw.jpg",
+                              "name": "Diane Abbott"},
+                "E14000764": {"party": "Lab",
+                              "elected": "ethornberry.jpg",
+                              "rip": "ethornberry_bw.jpg",
+                              "name": "Emily Thornberry"},
+                "E14000750": {"party": "Lab",
+                              "elected": "kstarmer.jpg",
+                              "rip": "kstarmer_bw.jpg",
+                              "name": "Keir Starmer"},
+                "E14000978": {"party": "Lab",
+                              "elected": "cumunna.jpg",
+                              "rip": "cumunna_bw.jpg",
+                              "name": "Chuka Umunna"},
+                "E14001037": {"party": "LD",
+                              "elected": "tfarron.jpg",
+                              "rip": "tfarron_bw.jpg",
+                              "name": "Tim Farron"},
+                "E14001005": {"party": "LD",
+                              "elected": "vcable.jpg",
+                              "rip": "vcable_bw.jpg",
+                              "name": "Vince Cable"},
+                "E14000922": {"party": "LD",
+                              "elected": "nclegg.jpg",
+                              "rip": "nclegg_bw.jpg",
+                              "name": "Nick Clegg"},
+                "E14000598": {"party": "Green",
+                              "elected": "clucas.jpg",
+                              "rip": "clucas_bw.jpg",
+                              "name": "Caroline Lucas"},
+                "S14000046": {"party": "SNP",
+                              "elected": "arobertson.jpg",
+                              "rip": "arobertson_bw.jpg",
+                              "name": "Angus Robertson"},
+                "S14000037": {"party": "SNP",
+                              "elected": "asalmond.jpg",
+                              "rip": "asalmond_bw.jpg",
+                              "name": "Alex Salmond"}
+            }
+            
+            //console.log(data);
+            
+            for (var i = data.length - 1; i >= 0; i--) {
+                if (data[i].constituency_id in actual){
+                    //console.log(actual[data[i].constituency_id]);
+                    if (data[i].winner_abr == actual[data[i].constituency_id].party){
+                        var contDiv = photoGallery.append("div").attr("class", "graveyard-mp");
+                        contDiv.append("img")
+                            .attr("src", "photos/"+actual[data[i].constituency_id].elected)
+                            .attr("title", actual[data[i].constituency_id].name)
+                            .attr("width", "100%");
+                        contDiv.append("div").attr("class", "elected-text").text("Elected!");
+                    } else {
+                        var contDiv = photoGallery.append("div").attr("class", "graveyard-mp");
+                        contDiv.append("img")
+                            .attr("src", "photos/"+actual[data[i].constituency_id].rip)
+                            .attr("title", actual[data[i].constituency_id].name + ", defeated by the " + data[i].winner_party + " candidate")
+                            .attr("width", "100%");
+                        contDiv.append("div").attr("class", "defeated-text").text("Defeated!");
+                    }
+                }
+            }
+            
+            
+        }
+          
+        function buildParliament(threshold){
+            console.log("Building Parliament...", threshold);
+            
+            aggregateResults = {
+                "Lab": 0,
+                "Con": 0,
+                "LD": 0,
+                "Green": 0,
+                "SNP": 0,
+                "PC": 0,
+                "UKIP": 0,
+                "Other": 0
+            }
+            
+            genderBalance = {
+                "Men": 0,
+                "Women": 0
+            }
+            
+            $.ajax({
+              url: "./getData",
+              data: {
+                  threshold: threshold
+              },
+              context: document.body
+            }).done(function( data ) {
+                var processedItems = 0;    
+                data.forEach(function (datum){
+                  processedItems++;
+                  
+                  if (datum.winner_gender == "Female"){
+                      genderBalance['Women']++;
+                  } else {
+                      genderBalance['Men']++;
+                  }
+                    
+                  var winningParty = datum.winner_abr;
+                  if(!aggregateResults[winningParty] && aggregateResults[winningParty] != 0){
+                      aggregateResults['Other'] += 1;
+                  } else {
+                    aggregateResults[winningParty] += 1;
+                  }
+                    
+                  //console.log(datum);    
+                    
+                     
+                  
+                  d3.select('#'+datum.constituency_id)
+                    .style('fill', datum.fill_colour)
+                    .attr("winner", datum.winner_abr)
+                    .attr("realWinner", datum.is_real_winner)
+                    .on("mousemove", function () {
+                        showTooltip(datum);
+                    })
+                    .on("mouseout",  function(d,i) {
+                      d3.select('#map-container').selectAll("div").classed("hidden", true);
+                   });
+                    
+                  
+                    
+                  if (processedItems == data.length){
+                      //console.log(aggregateResults);
+                      var maxi = {
+                          "party": '',
+                          "seats": 0
+                      };
+                      
+                      var partyNameLookup = {
+                            "Lab": "Labour",
+                            "Con": "The Conservatives",
+                            "LD": "The Liberal Democrats",
+                            "Green": "The Greens",
+                            "SNP": "The SNP",
+                            "PC": "Plaid Cymru",
+                            "UKIP": "UKIP",
+                            "Other": "Other parties"
+                        }
+                      
+                      for (var party in aggregateResults){
+                          if (aggregateResults[party] > maxi.seats){
+                              maxi.seats = aggregateResults[party];
+                              maxi.party = partyNameLookup[party];
+                          }
+                      }
+                      
+                      pieVtwo(aggregateResults);
+                      buildGender(genderBalance);
+                      $("#aggregates-legend").css("visibility", "visible");
+                      var headline = '';
+                      var standfirst = '';
+                      if (maxi.seats < 350){
+                          headline = "Hung Parliament";
+                          standfirst = maxi.party + " are " + (350 - maxi.seats) + " seats short";
+                      } else {
+                          headline = maxi.party + " Majority";
+                          standfirst = "of " + (maxi.seats - 350) + "seats!";
+                      }
+                      
+                      $('#headline').text(headline);
+                      $('#standfirst').text(standfirst);
+                  }
+              });
+                
+              console.log(genderBalance);
+              buildGraveyard(data);
+                
+            });
+        }
+          
+        var width = 960,
+            height = 860;
+        var active = d3.select(null);
+          
+        var zoom = d3.zoom()
+            .scaleExtent([0, 8])
+            .on("zoom", zoomed);
+          
+        var projection = d3.geoMercator()
+          .scale(2600)
+          .center([2, 55.168])
+          .translate([width / 2, height / 2]);
+
+        var path = d3.geoPath()
+          .projection(projection);
+
+        var mapLayer = d3.select("#map-container").append("svg")
+            .attr("width", "100%")
+            .attr("height", height)
+            .call(zoom);
+          
+        var mapG = d3.select("#map-container").selectAll("svg").append("g"); 
+          
+        var offsetL = document.getElementById('map-container').offsetLeft+685;
+        var offsetT = document.getElementById('map-container').offsetTop+535; 
+          
+        var tooltip = d3.select("#map-container").append("div")
+            .attr("class", "tooltip hidden");
+          
+          
+        d3.json("data/boundaries.geojson", function(error, mapData) {
+            if (error) return console.error(error);
+            
+            var features = mapData.features;
+            mapG.selectAll('path')
+            .data(features)
+            .enter().append('path')
+            .attr('d', path)
+            .attr('id', function (d) { return d.properties.pcon16cd; }) 
+            .style('fill', "gray")
+            //.on("mousemove", function (d) { console.log(d); })
+            .on('click', clicked )
+            
+        });
+          
+        function clicked(d) {   
+          if (active.node() === this) return reset();
+          active.classed("active", false);
+          active = d3.select(this).classed("active", true);
+
+          var bounds = path.bounds(d),
+              dx = bounds[1][0] - bounds[0][0],
+              dy = bounds[1][1] - bounds[0][1],
+              x = (bounds[0][0] + bounds[1][0]) / 2,
+              y = (bounds[0][1] + bounds[1][1]) / 2,
+              scale = Math.max(1, Math.min(8, 0.9 / Math.max(dx / width, dy / height))),
+              translate = [width / 2 - scale * x, height / 2 - scale * y];
+
+          mapLayer.selectAll("svg").transition()
+              .duration(750)
+              // .call(zoom.translate(translate).scale(scale).event); // not in d3 v4
+              .call( zoom.transform, d3.zoomIdentity.translate(translate[0],translate[1]).scale(scale) ); // updated for d3 v4
+        }
+          
+        function showTooltip(d) {
+          //console.log(d);
+          label = "<b>Constituency: </b>"+d.constituency_name+"<br/><b>Winning Candidate: </b>"+d.winner_firstname+" "+d.winner_surname+"<br/><b>Winning party:</b> "+d.winner_party+"<br/><b>Vote share :</b> "+String(Math.round( (d.winner_voteshare*100) * 10) / 10)+"%";
+            
+          if (d.candidate_list.length > 1){
+              label += "<br/><br/><b>Defeated candidates:</b>";
+              for (var i = d.candidate_list.length - 1; i >= 0; i--) {
+                  if (d.candidate_list[i].party_full != d.winner_party){
+                    label += "<br/>"+d.candidate_list[i].firstname+" "+d.candidate_list[i].surname+", "+d.candidate_list[i].party_full+": "+String(Math.round( (d.candidate_list[i].vote_share*100) * 10) / 10)+"%";
+                  }
+              }
+          }
+          var mouse = d3.mouse(svg.node())
+            .map( function(d) { return parseInt(d); } );
+        
+            console.log(mouse);
+            
+        //TODO: Add conditional to make tooltip display to the left of the cursor if more than halfway east; ditto bottom/north
+          tooltip.classed("hidden", false)
+            .attr("style", "left:"+(mouse[0]+offsetL)+"px; top:"+(mouse[1]+offsetT)+"px;")
+            .html(label);
+        }
+
+        function reset() {
+          active.classed("active", false);
+          active = d3.select(null);
+
+          mapLayer.transition()
+              .duration(750)
+              // .call( zoom.transform, d3.zoomIdentity.translate(0, 0).scale(1) ); // not in d3 v4
+              .call( zoom.transform, d3.zoomIdentity ); // updated for d3 v4
+        } 
+
+        function zoomed() {
+          mapLayer.select("svg").style("stroke-width", 1.5 / d3.event.transform.k + "px");
+          // g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")"); // not in d3 v4
+          mapLayer.select("g").attr("transform", function(d){
+              d3.event.transform.y = (d3.event.transform.y);
+              d3.event.transform.x = (d3.event.transform.x);
+              return d3.event.transform;
+          }); // updated for d3 v4
+        }
+          
+          
+          
+      </script>
+  </body>
+</html>  

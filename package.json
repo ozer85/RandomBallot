@@ -1,0 +1,19 @@
+{
+  "name": "randomballot",
+  "version": "1.0.0",
+  "description": "One page webapp modelling and mapping General Election results under the Random Ballot voting system.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./bin/www",
+    "server": "node server"
+  },
+  "dependencies": {
+    "debug": "~2.1.1",
+    "d3":"~4.10.2",
+    "graceful-fs":"~4.1.11",
+    "geojson":"~0.5.0"
+  },
+  "author": "Owen Spottiswoode",
+  "license": "ISC"
+}
