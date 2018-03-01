@@ -3,7 +3,7 @@
     <div id="title-header" class="row">
     
         <div id="title-sub">
-            <h1>Random Ballot</h1>
+            <h1 class="display-1">Random Ballot</h1>
             <h3>Making Electoral Reform Fun!</h3>
         </div>
         <div id="blurb">
@@ -12,8 +12,8 @@
         </div>
         <div id="anchor-buttons" class="container-fluid text-center">
         
-            <button type="button" class="btn btn-dark">Run Your Election!</button>
-            <button type="button" class="btn btn-dark">Find Out More!</button>
+            <a role="button" class="btn btn-dark" href="#tool-main">Run Your Election!</a>
+            <a role="button" class="btn btn-dark" href="#faqs">Find Out More!</a>
         
         </div>
     
@@ -156,7 +156,7 @@
 
         <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
           <div class="card-body">
-              <p>Yes and no (Minister). I’m aware that the Random Ballot is an esoteric system, and that there’s no prospect at all of it being adopted in the UK – for now. But I do genuinely think that it is an elegant system that solves a lot of the problems associated with both first-past- the-post and the various alternatives commonly put forward as prospective replacements.</p>
+              <p>Yes and no (Minister). I’m aware that the Random Ballot is an esoteric system, and that there’s no prospect at all of it being adopted in the UK... for now. But I do genuinely think that it is an elegant system that solves a lot of the problems associated with both first-past- the-post and the various alternatives commonly put forward as prospective replacements.</p>
           </div>
         </div>
       </div>
@@ -173,7 +173,7 @@
               <p>Shall I list the ways?</p>
               <ul>
                   <li><b>It’s proportional</b> – averaged over 650 constituencies, the proportion of seats held by each UK party under Random Ballot will tend towards the share of the vote they received. By contrast, our current voting system – <a href="https://inews.co.uk/news/politics/number-seats-party-won-vs-vote-share/">called by one academic</a> “one of the most disproportionate electoral systems available” – tends to produce Parliaments that don’t accurately reflect the way people voted. <a href="https://commonslibrary.parliament.uk/parliament-and-elections/elections-elections/general-election-2017-turning-votes-into-seats/">In 2017</a>, the Conservative Party required on average 43,000 votes to elect each of its MPs, whereas the Green Party needed 525,700 and the Lib Dems 197,700.</li>
-                  <li><b>It’s simple</b> – unlike most of the <a href="http://www.dprvoting.org/System_Comparison.htm">alternatives</a> put forward to replace first-past- the-post, Random Ballot doesn’t require voters to rank candidates, make more than one choice, or express a second preference. To the voter, the system works exactly as it does now.</li>
+                  <li><b>It’s simple</b> – unlike most of the <a href="http://www.dprvoting.org/System_Comparison.htm">alternatives</a> put forward to replace first-past-the-post, Random Ballot doesn’t require voters to rank candidates, make more than one choice, or express a second preference. To the voter, the system works exactly as it does now.</li>
                   <li><b>There are no wasted votes</b> – in each constituency, a candidate’s chances of getting elected are directly proportional to the number of people they can convince to vote for them. This means that every vote matters, and candidates should work harder to listen to their prospective constituents.</li>
                   <li><b>It maintains the constituency link</b> – unlike some alternatives to first-past- the-post, Random Ballot keeps the link between an MP and their constituency, so that voters in each area of the country have someone to represent them specifically in Parliament.</li>
                   <li><b>There are no safe seats</b> – under first-past- the-post, any MP who gains 50% of the vote is considered by the <a href="http://researchbriefings.parliament.uk/ResearchBriefing/Summary/CBP-8067">House of Commons Library</a> to hold a “very safe seat”. These seats almost never change hands, meaning that the other half of residents never get their voice heard in Parliament. Under Random Ballot, a candidate winning 50% of the vote would, on average, win the seat 50% of the time, giving a chance for other people’s views to be represented. It also means that election results won’t be determined by a handful of swing seats, ensuring that the importance of everyone’s vote is equal regardless of where in the country you live.</li>
@@ -214,6 +214,23 @@
         </div>
       </div>
       <div class="card">
+        <div class="card-header" id="headingFourPointOne">
+          <h5 class="mb-0">
+            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFourPointOne" aria-expanded="false" aria-controls="collapseFourPointOne">
+             How can you elect a Government if you don't know who the Prime Minister will be? Won't it be chaos?
+            </button>
+          </h5>
+        </div>
+        <div id="collapseFourPointOne" class="collapse" aria-labelledby="headingFourPointOne" data-parent="#accordion">
+          <div class="card-body">
+              <p>If you run some dummy elections using the tool above, you will have noticed that poor old Theresa May doesn't always make it (mathematically, she should be elected around two-thirds of the time). Of course, this would never happen under first-past-the-post, where winning 65% of the vote makes her unassailable. Under Random Ballot, there is a less than 50% chance that both she and Jeremy Corbyn would win their seats. So how can you possibly hold an election with those odds?</p>
+              <p>This, I think, is quite a modern dilemma: for better or worse, politics in Britain today has a very "presidential" style, to the extent that <a href="https://www.ncpolitics.uk/2015/05/shy-tory-factor-2015.html/7/">a leader's approval ratings have sometimes been a better predictor of election results than voting intention polls.</a> But constitutionally, Britain doesn't have a "presidential" system: it is the support of individual MPs in Parliament that determines who can form a Government, not votes cast in a General Election. In theory, therefore, nothing changes in a Parliament elected by Random Ballot.</p>
+              <p>In practice, of course, this would require quite a cultural shift. But is it necessarily an unwelcome one? Under a system that doesn't guarantee that whoever leads a party into an election will be the same person who leads it afterwards, "personality politics" becomes less importance. What takes its place is a greater focus on the policies put forwards by the parties, and the personalities beyond the leader who would be tasked with enacting them.</p>
+
+          </div>
+        </div>
+      </div>    
+      <div class="card">
         <div class="card-header" id="headingFive">
           <h5 class="mb-0">
             <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
@@ -229,6 +246,21 @@
         </div>
       </div>
       <div class="card">
+        <div class="card-header" id="headingFivePointOne">
+          <h5 class="mb-0">
+            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFivePointOne" aria-expanded="false" aria-controls="collapseFivePointOne">
+             How accurate is the tool at predicting the results of an election held under Random Ballot?
+            </button>
+          </h5>
+        </div>
+        <div id="collapseFivePointOne" class="collapse" aria-labelledby="headingFivePointOne" data-parent="#accordion">
+          <div class="card-body">
+              <p>If everyone voted as they did in 2017, the tool will model the results perfectly accurately (or as accurately as is possible in a system with chance baked into it!). But would people vote the same way? Probably not, and that's a good thing! Much like any other proportional system, Random Ballot will produce a Parliament that broadly reflects people's true preferences, rather than the narrow set of choices they are forced into by the current voting system. This means that smaller parties are no longer penalised by tactical voting in marginal constituencies where people vote to keep a party <i>out</i> rather than voting for the candidate they'd actually like to represent them. As voter behaviour changes, so does the likelihood of any given candidate getting elected under Random Ballot.</p>
+
+          </div>
+        </div>
+      </div>
+      <div class="card">
         <div class="card-header" id="headingSix">
           <h5 class="mb-0">
             <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
@@ -238,7 +270,7 @@
         </div>
         <div id="collapseSix" class="collapse" aria-labelledby="headingSix" data-parent="#accordion">
           <div class="card-body">
-              <p>Of course - nothing would give me greater pleasure! Fork me over on GitHub, and drop me a line to let me know what weird and wonderful results you come up with.</p>
+              <p>Of course - nothing would give me greater pleasure! <a href="https://github.com/ozer85/RandomBallot">Fork me over on GitHub</a>, and <a href="https://twitter.com/OwenSpottswoode">drop me a line</a> to let me know what weird and wonderful results you come up with.</p>
 
           </div>
         </div>
@@ -248,4 +280,16 @@
         
     </div>
     
+</div>
+
+<div id="footer" class="container-fluid">
+
+    <hr/>
+    <div id="footer-content" class="row">
+    
+        <div id="footer-license" class="col-sm">Published under <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution license 4.0</a></div>
+        <div id="footer-links" class="col-sm"><a href="https://github.com/ozer85/RandomBallot">Get the code on GitHub</a>  |  <a href="https://twitter.com/OwenSpottswoode">Stay in touch on Twitter</a></div>
+        
+    </div>
+
 </div>
