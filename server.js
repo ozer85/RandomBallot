@@ -5,7 +5,7 @@ const d3 = require('d3')
 const fs = require('graceful-fs')
 
 const app = express()
-const port = 80;
+const port = 3000;
 
 var geo, results;
 
