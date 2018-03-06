@@ -223,12 +223,12 @@
           
         var selectedRadio = 0;  
         var virginCheck = true;
-        var svg, arc, arcs, pie, labelArc, g;
+        var svg, arc, arcs, pie, labelArc, g, mouse, offsetL, offsetT;
         var s = 1;
         var aggregateResults, genderBalance;
           
         function changeThreshold (val){
-            console.log(val);
+            //console.log(val);
             selectedRadio = val;
         }
           
@@ -294,7 +294,15 @@
             ir = 105;
             pi = Math.PI;
             
-            function change() {
+            function change() { 
+                
+                console.log(offsetL);
+                
+                offsetL = document.getElementById('map-container').offsetLeft+400;
+                offsetT = document.getElementById('map-container').offsetTop-99;
+                
+                console.log(offsetL);
+                
                 $('.pie-label').remove();
                 $('#gender-balance').remove();
                 $('#graveyard').remove();
@@ -727,7 +735,7 @@
                   }
               });
                 
-              console.log(genderBalance);
+              //console.log(genderBalance);
               buildGraveyard(data);
                 
             });
@@ -756,8 +764,8 @@
           
         var mapG = d3.select("#map-container").selectAll("svg").append("g"); 
           
-        var offsetL = document.getElementById('map-container').offsetLeft+666;
-        var offsetT = document.getElementById('map-container').offsetTop+111; 
+        offsetL = document.getElementById('map-container').offsetLeft+666;
+        offsetT = document.getElementById('map-container').offsetTop+111; 
           
         var tooltip = d3.select("#map-container").append("div")
             .attr("class", "tooltip hidden");
@@ -809,10 +817,11 @@
                   }
               }
           }
-          var mouse = d3.mouse(svg.node())
-            .map( function(d) { return parseInt(d); } );
+            
+          mouse = d3.mouse(svg.node())
+            .map( function(d) { return parseInt(d); } );    
         
-            console.log(mouse);
+            //console.log(mouse[0]);
             
         //TODO: Add conditional to make tooltip display to the left of the cursor if more than halfway east; ditto bottom/north
           tooltip.classed("hidden", false)
