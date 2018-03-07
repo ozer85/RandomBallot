@@ -298,8 +298,8 @@
                 
                 console.log(offsetL);
                 
-                offsetL = document.getElementById('map-container').offsetLeft+400;
-                offsetT = document.getElementById('map-container').offsetTop-99;
+                offsetL = 605;
+                offsetT = 343;
                 
                 console.log(offsetL);
                 
@@ -764,8 +764,11 @@
           
         var mapG = d3.select("#map-container").selectAll("svg").append("g"); 
           
-        offsetL = document.getElementById('map-container').offsetLeft+666;
-        offsetT = document.getElementById('map-container').offsetTop+111; 
+//        offsetL = document.getElementById('map-container').offsetLeft;
+//        offsetT = document.getElementById('map-container').offsetTop; 
+          
+          offsetL = 870;
+          offsetT = 550;
           
         var tooltip = d3.select("#map-container").append("div")
             .attr("class", "tooltip hidden");
